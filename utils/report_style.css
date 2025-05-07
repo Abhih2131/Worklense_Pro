@@ -1,0 +1,50 @@
+
+/* ✅ Beautified KPI Card Styling with One-Line Fixes */
+.kpi-card {
+  background: linear-gradient(to right, #f0f0ff, #fce4fd);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 80%;
+}
+
+.kpi-card:hover {
+  transform: scale(1.03);
+}
+
+.kpi-label {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.kpi-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #002244;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Uniform spacing */
+div[class^="stColumn"] > div {
+  height: 100%;
+  padding: 6px;
+}
+.kpi-label {
+  font-weight: bold;
+}
+.kpi-label {
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  color: #0E2A47;  /* Optional: darker shade for more contrast */
+}
