@@ -6,9 +6,10 @@ def render(data_frames):
     from PIL import Image, ImageDraw, ImageOps
     import base64
     from io import BytesIO
-    from selenium import webdriver
-    from selenium.webdriver.chrome.options import Options
-    import time
+
+    # Function to detect if running on Streamlit Cloud
+    def is_cloud():
+        return 'appuser' in os.getcwd()
 
     def format_inr(val):
         try:
@@ -41,7 +42,17 @@ def render(data_frames):
                 return f"data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode()}"
         return ""
 
+    # Only enable PDF export if NOT running on Streamlit Cloud
     def export_html_to_pdf_using_cdp(html_path, pdf_path):
+        import streamlit as st
+        if is_cloud():
+            st.warning("PDF export is not supported on Streamlit Cloud.")
+            return False
+        from selenium import webdriver
+        from selenium.webdriver.chrome.options import Options
+        import time
+        import base64
+
         chrome_options = Options()
         chrome_options.add_argument('--headless=new')
         chrome_options.add_argument('--disable-gpu')
@@ -62,6 +73,7 @@ def render(data_frames):
             f.write(base64.b64decode(result['data']))
 
         driver.quit()
+        return True
 
     df = data_frames.get("employee", pd.DataFrame())
     if df.empty:
@@ -227,7 +239,12 @@ def render(data_frames):
     with open(html_path, "w", encoding="utf-8") as f:
         f.write(html)
 
-    export_html_to_pdf_using_cdp(html_path, pdf_path)
+    # Only try PDF export and show download if not on cloud
+    if not is_cloud():
+        pdf_success = export_html_to_pdf_using_cdp(html_path, pdf_path)
+        if pdf_success:
+            with open(pdf_path, "rb") as f:
+                st.download_button("⬇️ Download as PDF", f, file_name=os.path.basename(pdf_path))
+    else:
+        st.info("PDF export is not available on Streamlit Cloud deployment.")
 
-    with open(pdf_path, "rb") as f:
-        st.download_button("⬇️ Download as PDF", f, file_name=os.path.basename(pdf_path))
