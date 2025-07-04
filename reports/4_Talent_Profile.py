@@ -7,8 +7,8 @@ def render(data_frames):
     import base64
     from io import BytesIO
 
-    # Function to detect if running on Streamlit Cloud
     def is_cloud():
+        # Detect Streamlit Cloud environment
         return 'appuser' in os.getcwd()
 
     def format_inr(val):
@@ -42,12 +42,12 @@ def render(data_frames):
                 return f"data:image/png;base64,{base64.b64encode(buffer.getvalue()).decode()}"
         return ""
 
-    # Only enable PDF export if NOT running on Streamlit Cloud
     def export_html_to_pdf_using_cdp(html_path, pdf_path):
         import streamlit as st
         if is_cloud():
             st.warning("PDF export is not supported on Streamlit Cloud.")
             return False
+        # ONLY import and use Selenium if running locally!
         from selenium import webdriver
         from selenium.webdriver.chrome.options import Options
         import time
@@ -247,4 +247,3 @@ def render(data_frames):
                 st.download_button("⬇️ Download as PDF", f, file_name=os.path.basename(pdf_path))
     else:
         st.info("PDF export is not available on Streamlit Cloud deployment.")
-
