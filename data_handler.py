@@ -1,6 +1,6 @@
-
 import pandas as pd
 from datetime import datetime, date
+import os
 
 def load_employee_data(file_path):
     """Load and clean employee master data with safe column handling."""
@@ -47,11 +47,25 @@ def calculate_tenure(doj):
 def load_all_data(folder_path):
     """Load all key datasets into a dictionary."""
     try:
+        # Compose full paths
+        emp_file = os.path.join(folder_path, "employee_master.xlsx")
+        leave_file = os.path.join(folder_path, "HRMS_Leave.xlsx")
+        sales_file = os.path.join(folder_path, "Sales_INR.xlsx")
+
+        # Check if files exist (helpful debug for cloud!)
+        for f in [emp_file, leave_file, sales_file]:
+            if not os.path.exists(f):
+                import streamlit as st
+                st.error(f"File not found: {f}")
+                raise FileNotFoundError(f"File not found: {f}")
+
         data = {
-            "employee": load_employee_data(f"{folder_path}/employee_master.xlsx"),
-            "leave": load_leave_data(f"{folder_path}/HRMS_Leave.xlsx"),
-            "sales": load_sales_data(f"{folder_path}/Sales_INR.xlsx")
+            "employee": load_employee_data(emp_file),
+            "leave": load_leave_data(leave_file),
+            "sales": load_sales_data(sales_file)
         }
         return data
     except Exception as e:
+        import streamlit as st
+        st.error(f"Data loading failed: {str(e)}")
         raise RuntimeError(f"Data loading failed: {str(e)}")
